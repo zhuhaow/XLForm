@@ -79,5 +79,15 @@
     return nil;
 }
 
+#pragma mark - Navigation Between Fields
+
+-(UIView *)inputAccessoryView
+{
+    UIView * inputAccessoryView = [self.formViewController inputAccessoryViewForRowDescriptor:self.rowDescriptor];
+    if (inputAccessoryView){
+        return inputAccessoryView;
+    }
+    return [super inputAccessoryView];
+}
 
 @end

@@ -73,11 +73,7 @@
 
 -(BOOL)formDescriptorCellBecomeFirstResponder
 {
-    return YES;
-}
 
--(void)formDescriptorCellDidSelectedWithFormController:(XLFormViewController *)controller
-{
     if ([self isFirstResponder]){
         [self resignFirstResponder];
     }
@@ -92,6 +88,11 @@
         inlineCell.inlineRowDescriptor = self.rowDescriptor;
         [self.rowDescriptor.sectionDescriptor addFormRow:inlineRowDescriptor afterRow:self.rowDescriptor];
     }
+    return YES;
+}
+
+-(void)formDescriptorCellDidSelectedWithFormController:(XLFormViewController *)controller
+{
     [controller.tableView deselectRowAtIndexPath:[controller.form indexPathOfFormRow:self.rowDescriptor] animated:YES];
 }
 

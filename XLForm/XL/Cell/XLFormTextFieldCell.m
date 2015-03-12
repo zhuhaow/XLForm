@@ -144,11 +144,6 @@
     return [self.textField becomeFirstResponder];
 }
 
--(BOOL)formDescriptorCellResignFirstResponder
-{
-    return [self.textField resignFirstResponder];
-}
-
 #pragma mark - Properties
 
 -(UILabel *)textLabel

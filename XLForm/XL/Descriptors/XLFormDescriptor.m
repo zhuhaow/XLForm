@@ -51,6 +51,8 @@ NSString * const XLValidationStatusErrorKey = @"XLValidationStatusErrorKey";
         _formSections = [NSMutableArray array];
         _title = title;
         _addAsteriskToRequiredRowsTitle = NO;
+#warning change to _rowNavigationSettings = XLFormRowNavigationNone;
+        _rowNavigationSettings = XLFormRowNavigationDefault;
         [self addObserver:self forKeyPath:@"formSections" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:0];
     }
     return self;
@@ -389,5 +391,52 @@ NSString * const XLValidationStatusErrorKey = @"XLValidationStatusErrorKey";
     return _formSections;
 }
 
+#pragma mark - Helpers
+
+-(XLFormRowDescriptor *)nextRowDescriptorForRow:(XLFormRowDescriptor *)currentRow
+{
+    NSAssert(currentRow, @"current row must not be nil");
+    XLFormRowDescriptor * nextRow = nil;
+    
+    NSArray * allRows = [self getRowsList];
+    
+    NSInteger currentIndex = [allRows indexOfObject:currentRow];
+    if (currentIndex != NSNotFound){
+        NSInteger newIndex = currentIndex + 1;
+        if (newIndex <  [allRows count]){
+            nextRow = [allRows objectAtIndex:newIndex];
+        }
+    }
+    return nextRow;
+}
+
+
+-(XLFormRowDescriptor *)previousRowDescriptorForRow:(XLFormRowDescriptor *)currentRow
+{
+    NSAssert(currentRow, @"current row must not be nil");
+    XLFormRowDescriptor * previousRow = nil;
+    
+    NSArray * allRows = [self getRowsList];
+    
+    NSInteger currentIndex = [allRows indexOfObject:currentRow];
+    if (currentIndex != NSNotFound){
+        NSInteger previousIndex = currentIndex - 1;
+        if (previousIndex >= 0){
+            previousRow = [allRows objectAtIndex:previousIndex];
+        }
+    }
+    return previousRow;
+}
+
+-(NSArray *)getRowsList
+{
+    NSMutableArray * allRows = [NSMutableArray new];
+    for (XLFormSectionDescriptor * section in self.formSections){
+        if ([section.formRows count] > 0){
+            [allRows addObjectsFromArray:section.formRows];
+        }
+    }
+    return allRows;
+}
 
 @end

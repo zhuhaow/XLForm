@@ -37,6 +37,14 @@ typedef NS_ENUM(NSInteger, XLFormErrorCode)
     XLFormErrorCodeRequired = -1000
 };
 
+typedef NS_ENUM(NSUInteger, XLFormRowNavigationSettings) {
+    XLFormRowNavigationNone                                          = 0,
+    XLFormRowNavigationDefault                                       = 1 << 0,
+    XLFormRowNavigationDisableWhenReachDisableRow                    =  XLFormRowNavigationDefault | 1 << 1,
+    XLFormRowNavigationDisableWhenReachCanNotBecomeFirstResponderRow = XLFormRowNavigationDefault | 1 << 2,
+    XLFormRowNavigationDisableWhenReachInlineRow                     = XLFormRowNavigationDefault | 1 << 3,
+};
+
 @class XLFormSectionDescriptor;
 
 @interface XLFormDescriptor : NSObject
@@ -45,6 +53,7 @@ typedef NS_ENUM(NSInteger, XLFormErrorCode)
 @property (readonly) NSString * title;
 @property (nonatomic) BOOL assignFirstResponderOnShow;
 @property (nonatomic) BOOL addAsteriskToRequiredRowsTitle;
+@property (nonatomic) XLFormRowNavigationSettings rowNavigationSettings;
 
 @property (weak) id<XLFormDescriptorDelegate> delegate;
 
@@ -78,5 +87,8 @@ typedef NS_ENUM(NSInteger, XLFormErrorCode)
 
 -(NSArray *)localValidationErrors:(XLFormViewController *)formViewController;
 - (void)setFirstResponder:(XLFormViewController *)formViewController;
+
+-(XLFormRowDescriptor *)nextRowDescriptorForRow:(XLFormRowDescriptor *)currentRow;
+-(XLFormRowDescriptor *)previousRowDescriptorForRow:(XLFormRowDescriptor *)currentRow;
 
 @end

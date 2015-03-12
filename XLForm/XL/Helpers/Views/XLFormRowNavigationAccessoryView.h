@@ -1,5 +1,5 @@
 //
-//  XLFormDatePickerCell.m
+//  XLFormRowNavigationAccessoryView.h
 //  XLForm ( https://github.com/xmartlabs/XLForm )
 //
 //  Copyright (c) 2014 Xmartlabs ( http://xmartlabs.com )
@@ -23,47 +23,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "UIView+XLFormAdditions.h"
+#import <UIKit/UIKit.h>
 
-#import "XLFormDatePickerCell.h"
-
-@implementation XLFormDatePickerCell
-
-@synthesize datePicker = _datePicker;
-
--(BOOL)canResignFirstResponder
+typedef enum
 {
-    return YES;
-}
-
-#pragma mark - Properties
-
--(UIDatePicker *)datePicker
-{
-    if (_datePicker) return _datePicker;
-    _datePicker = [UIDatePicker autolayoutView];
-    return _datePicker;
-}
-
-#pragma mark - XLFormDescriptorCell
-
--(void)configure
-{
-    [super configure];
-    [self.contentView addSubview:self.datePicker];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.datePicker attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[datePicker]-0-|" options:0 metrics:0 views:@{@"datePicker" : self.datePicker}]];
-}
-
--(void)update
-{
-    [super update];
-}
+    XLFormRowNavigationDirectionPrevious = 0,
+    XLFormRowNavigationDirectionNext
+} XLFormRowNavigationDirection;
 
 
-+(CGFloat)formDescriptorCellHeightForRowDescriptor:(XLFormRowDescriptor *)rowDescriptor
-{
-    return 216.0f;
-}
+@interface XLFormRowNavigationAccessoryView : UIView
+
+@property (nonatomic, strong) UIBarButtonItem *previousButton;
+@property (nonatomic, strong) UIBarButtonItem *nextButton;
+@property (nonatomic, strong) UIBarButtonItem *doneButton;
 
 @end

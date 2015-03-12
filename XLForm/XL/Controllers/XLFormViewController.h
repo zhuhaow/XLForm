@@ -71,4 +71,6 @@
 
 -(void)performFormSeletor:(SEL)selector withObject:(id)sender;
 
+-(UIView *)inputAccessoryViewForRowDescriptor:(XLFormRowDescriptor *)rowDescriptor;
+
 @end
