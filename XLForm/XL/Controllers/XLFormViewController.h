@@ -28,6 +28,7 @@
 #import "XLFormDescriptor.h"
 #import "XLFormSectionDescriptor.h"
 #import "XLFormDescriptorDelegate.h"
+#import "XLFormRowNavigationAccessoryView.h"
 
 
 @class XLFormViewController;
@@ -63,6 +64,7 @@
 
 @property XLFormDescriptor * form;
 @property IBOutlet UITableView * tableView;
+@property (nonatomic)  XLFormRowNavigationAccessoryView * navigationAccessoryView;
 
 -(id)initWithForm:(XLFormDescriptor *)form;
 -(id)initWithForm:(XLFormDescriptor *)form style:(UITableViewStyle)style;

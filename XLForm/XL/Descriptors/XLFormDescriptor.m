@@ -295,7 +295,7 @@ NSString * const XLValidationStatusErrorKey = @"XLValidationStatusErrorKey";
     for (XLFormSectionDescriptor * formSection in self.formSections) {
         for (XLFormRowDescriptor * row in formSection.formRows) {
             UITableViewCell<XLFormDescriptorCell> * cell = [row cellForFormController:formViewController];
-            if ([cell respondsToSelector:@selector(formDescriptorCellBecomeFirstResponder)]){
+            if ([cell formDescriptorCellCanBecomeFirstResponder]){
                 if ([cell formDescriptorCellBecomeFirstResponder]){
                     return;
                 }

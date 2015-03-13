@@ -139,6 +139,11 @@
     self.textField.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
+-(BOOL)formDescriptorCellCanBecomeFirstResponder
+{
+    return (!self.rowDescriptor.disabled);
+}
+
 -(BOOL)formDescriptorCellBecomeFirstResponder
 {
     return [self.textField becomeFirstResponder];

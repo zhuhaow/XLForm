@@ -121,6 +121,11 @@ NSString *const kFormTextViewCellPlaceholder = @"placeholder";
     return 110.f;
 }
 
+-(BOOL)formDescriptorCellCanBecomeFirstResponder
+{
+    return (!self.rowDescriptor.disabled);
+}
+
 -(BOOL)formDescriptorCellBecomeFirstResponder
 {
     return [self.textView becomeFirstResponder];

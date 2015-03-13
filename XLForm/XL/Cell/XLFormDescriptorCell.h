@@ -36,6 +36,7 @@
 @property (nonatomic, weak) XLFormRowDescriptor * rowDescriptor;
 -(void)configure;
 -(void)update;
+-(BOOL)formDescriptorCellCanBecomeFirstResponder;
 
 @optional
 

@@ -35,6 +35,17 @@
 @synthesize pickerView = _pickerView;
 @synthesize inlineRowDescriptor = _inlineRowDescriptor;
 
+-(BOOL)formDescriptorCellCanBecomeFirstResponder
+{
+    return ((!self.rowDescriptor.disabled) && (self.inlineRowDescriptor == nil));
+}
+
+-(BOOL)formDescriptorCellBecomeFirstResponder
+{
+    return [self becomeFirstResponder];
+}
+
+
 -(BOOL)canResignFirstResponder
 {
     return YES;
@@ -42,7 +53,7 @@
 
 -(BOOL)canBecomeFirstResponder
 {
-    return (self.inlineRowDescriptor == nil);
+    return ((!self.rowDescriptor.disabled) && (self.inlineRowDescriptor == nil));
 }
 
 #pragma mark - Properties

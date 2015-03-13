@@ -40,7 +40,6 @@
     UIColor * _beforeChangeColor;
 }
 
-
 - (UIView *)inputView
 {
     if ([self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeDate] || [self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeTime] || [self.rowDescriptor.rowType isEqualToString:XLFormRowDescriptorTypeDateTime]){
@@ -105,6 +104,12 @@
         [self.formViewController.tableView deselectRowAtIndexPath:[controller.form indexPathOfFormRow:self.rowDescriptor] animated:YES];
     }
 }
+
+-(BOOL)formDescriptorCellCanBecomeFirstResponder
+{
+    return (!self.rowDescriptor.disabled);
+}
+
 
 -(BOOL)formDescriptorCellBecomeFirstResponder
 {

@@ -71,6 +71,11 @@
     self.detailTextLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
+-(BOOL)formDescriptorCellCanBecomeFirstResponder
+{
+    return (!self.rowDescriptor.disabled);
+}
+
 -(BOOL)formDescriptorCellBecomeFirstResponder
 {
 

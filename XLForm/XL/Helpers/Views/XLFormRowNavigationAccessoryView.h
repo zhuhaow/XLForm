@@ -34,6 +34,7 @@ typedef enum
 
 @interface XLFormRowNavigationAccessoryView : UIView
 
+@property (nonatomic, strong) UIToolbar *toolBar;
 @property (nonatomic, strong) UIBarButtonItem *previousButton;
 @property (nonatomic, strong) UIBarButtonItem *nextButton;
 @property (nonatomic, strong) UIBarButtonItem *doneButton;

@@ -28,7 +28,6 @@
 #import "XLFormViewController.h"
 #import "UIView+XLFormAdditions.h"
 #import "XLForm.h"
-#import "XLFormRowNavigationAccessoryView.h"
 
 typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
     XLFormNavigationTypeStop = 0,
@@ -39,7 +38,6 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
 @interface XLFormViewController()
 
 @property UITableViewStyle tableViewStyle;
-@property (nonatomic)  XLFormRowNavigationAccessoryView * rowNavigationAccessoryView;
 
 @end
 
@@ -47,22 +45,22 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
 
 #pragma mark - Properties
 
--(XLFormRowNavigationAccessoryView *)rowNavigationAccessoryView
+-(XLFormRowNavigationAccessoryView *)navigationAccessoryView
 {
-    if (_rowNavigationAccessoryView) return _rowNavigationAccessoryView;
+    if (_navigationAccessoryView) return _navigationAccessoryView;
     
-    _rowNavigationAccessoryView = [XLFormRowNavigationAccessoryView new];
+    _navigationAccessoryView = [XLFormRowNavigationAccessoryView new];
     
-    _rowNavigationAccessoryView.previousButton.target = self;
-    _rowNavigationAccessoryView.previousButton.action = @selector(rowNavigationAction:);
+    _navigationAccessoryView.previousButton.target = self;
+    _navigationAccessoryView.previousButton.action = @selector(rowNavigationAction:);
     
-    _rowNavigationAccessoryView.nextButton.target = self;
-    _rowNavigationAccessoryView.nextButton.action = @selector(rowNavigationAction:);
+    _navigationAccessoryView.nextButton.target = self;
+    _navigationAccessoryView.nextButton.action = @selector(rowNavigationAction:);
     
-    _rowNavigationAccessoryView.doneButton.target = self;
-    _rowNavigationAccessoryView.doneButton.action = @selector(rowNavigationDone:);
+    _navigationAccessoryView.doneButton.target = self;
+    _navigationAccessoryView.doneButton.action = @selector(rowNavigationDone:);
     
-    return _rowNavigationAccessoryView;
+    return _navigationAccessoryView;
 }
 
 #pragma mark - Initialization
@@ -428,20 +426,6 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
     }
 }
 
--(NSIndexPath *)nextIndexPath:(NSIndexPath *)indexPath
-{
-    if ([self.tableView numberOfRowsInSection:indexPath.section] > (indexPath.row + 1)){
-        return [NSIndexPath indexPathForRow:(indexPath.row + 1) inSection:indexPath.section];
-    }
-    else if ([self.tableView numberOfSections] > (indexPath.section + 1)){
-        if ([self.tableView numberOfRowsInSection:(indexPath.section + 1)] > 0){
-            return [NSIndexPath indexPathForRow:0 inSection:(indexPath.section + 1)];
-        }
-    }
-    return nil;
-}
-
-
 #pragma mark - UITableViewDataSource
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -494,8 +478,10 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
         self.tableView.editing = NO;
         self.tableView.editing = YES;
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-        if ([[formRowDescriptor cellForFormController:self] respondsToSelector:@selector(formDescriptorCellBecomeFirstResponder)]){
-            [[formRowDescriptor cellForFormController:self] formDescriptorCellBecomeFirstResponder];
+        
+        UITableViewCell<XLFormDescriptorCell> * cell = (UITableViewCell<XLFormDescriptorCell> *)[formRowDescriptor cellForFormController:self];
+        if ([cell formDescriptorCellCanBecomeFirstResponder]){
+            [cell formDescriptorCellBecomeFirstResponder];
         }
     }
 }
@@ -541,8 +527,12 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
     if (row.disabled) {
         return;
     }
-    else if (!([[row cellForFormController:self] respondsToSelector:@selector(formDescriptorCellBecomeFirstResponder)] && [[row cellForFormController:self] formDescriptorCellBecomeFirstResponder])){
-        [self.tableView endEditing:YES];
+    else
+    {
+        UITableViewCell<XLFormDescriptorCell> * cell = (UITableViewCell<XLFormDescriptorCell> *)[row cellForFormController:self];
+        if (!([cell formDescriptorCellCanBecomeFirstResponder] && [cell formDescriptorCellBecomeFirstResponder])){
+            [self.tableView endEditing:YES];
+        }
     }
     [self didSelectFormRow:row];
 }
@@ -568,13 +558,12 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
 {
     // called when 'return' key pressed. return NO to ignore.
     UITableViewCell<XLFormDescriptorCell> * cell = [textField formDescriptorCell];
-    NSIndexPath * currentIndexPath = [self.tableView indexPathForCell:cell];
-    NSIndexPath * nextIndexPath = [self nextIndexPath:currentIndexPath];
+    XLFormRowDescriptor * currentRow = cell.rowDescriptor;
+    XLFormRowDescriptor * nextRow = [self.form nextRowDescriptorForRow:currentRow];
     
-    if (nextIndexPath){
-        XLFormRowDescriptor * nextFormRow = [self.form formRowAtIndex:nextIndexPath];
-        UITableViewCell<XLFormDescriptorCell> * nextCell = (UITableViewCell<XLFormDescriptorCell> *)[nextFormRow cellForFormController:self];
-        if ([nextCell respondsToSelector:@selector(formDescriptorCellBecomeFirstResponder)]){
+    if (nextRow){
+        UITableViewCell<XLFormDescriptorCell> * nextCell = (UITableViewCell<XLFormDescriptorCell> *)[nextRow cellForFormController:self];
+        if ([nextCell formDescriptorCellCanBecomeFirstResponder]){
             [nextCell formDescriptorCellBecomeFirstResponder];
             return YES;
         }
@@ -656,17 +645,22 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
         return nil;
     }
     
+     UITableViewCell<XLFormDescriptorCell> * cell = (UITableViewCell<XLFormDescriptorCell> *)[rowDescriptor cellForFormController:self];
+    if (![cell formDescriptorCellCanBecomeFirstResponder]){
+        return nil;
+    }
+    
     XLFormRowDescriptor * previousRow = [self nextRowDescriptorForRow:rowDescriptor direction:XLFormRowNavigationDirectionPrevious];
     XLFormRowDescriptor * nextRow = [self nextRowDescriptorForRow:rowDescriptor direction:XLFormRowNavigationDirectionNext];
-    [self.rowNavigationAccessoryView.previousButton setEnabled:(previousRow)];
-    [self.rowNavigationAccessoryView.nextButton setEnabled:(nextRow)];
+    [self.navigationAccessoryView.previousButton setEnabled:(previousRow)];
+    [self.navigationAccessoryView.nextButton setEnabled:(nextRow)];
     
-    return self.rowNavigationAccessoryView;
+    return self.navigationAccessoryView;
 }
 
 -(void)rowNavigationAction:(UIBarButtonItem *)sender
 {
-    (sender == self.rowNavigationAccessoryView.nextButton) ? [self navigateToDirection:XLFormRowNavigationDirectionNext]:
+    (sender == self.navigationAccessoryView.nextButton) ? [self navigateToDirection:XLFormRowNavigationDirectionNext]:
     [self navigateToDirection:XLFormRowNavigationDirectionPrevious];
 }
 
@@ -689,7 +683,7 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
     }
     
     UITableViewCell<XLFormDescriptorCell> * cell = (UITableViewCell<XLFormDescriptorCell> *)[nextRow cellForFormController:self];
-    if ([cell respondsToSelector:@selector(formDescriptorCellBecomeFirstResponder)]){
+    if ([cell formDescriptorCellCanBecomeFirstResponder]){
         NSIndexPath * indexPath = [self.form indexPathOfFormRow:nextRow];
         [self.tableView beginUpdates];
         [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionNone animated:NO];
@@ -733,7 +727,9 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
     if (((rowNavigationSettings & XLFormRowNavigationDisableWhenReachDisableRow) == XLFormRowNavigationDisableWhenReachDisableRow) && (row.disabled)){
         return XLFormNavigationTypeStop;
     }
-    if (((rowNavigationSettings & XLFormRowNavigationDisableWhenReachCanNotBecomeFirstResponderRow) == XLFormRowNavigationDisableWhenReachCanNotBecomeFirstResponderRow) && (![self rowCanBecomeFirstResponder:row])){
+    
+    UITableViewCell<XLFormDescriptorCell> * cell = (UITableViewCell<XLFormDescriptorCell> *)[row cellForFormController:self];
+    if (((rowNavigationSettings & XLFormRowNavigationDisableWhenReachCanNotBecomeFirstResponderRow) == XLFormRowNavigationDisableWhenReachCanNotBecomeFirstResponderRow) && (![cell formDescriptorCellCanBecomeFirstResponder])){
         return XLFormNavigationTypeStop;
     }
     if (((rowNavigationSettings & XLFormRowNavigationDisableWhenReachInlineRow) == XLFormRowNavigationDisableWhenReachInlineRow) && [[[XLFormViewController inlineRowDescriptorTypesForRowDescriptorTypes] allKeys] containsObject:row.rowType])
@@ -741,18 +737,12 @@ typedef NS_ENUM(NSUInteger, XLFormNavigationType) {
         return XLFormNavigationTypeStop;
     }
     
-    if (!row.disabled && [self rowCanBecomeFirstResponder:row]){ // if can become first responder => this row is the next
+    if (!row.disabled && [cell formDescriptorCellCanBecomeFirstResponder]){ // if can become first responder => this row is the next
         return XLFormNavigationTypeStay;
     }
     
     return XLFormNavigationTypeSkip;
 }
 
--(BOOL)rowCanBecomeFirstResponder:(XLFormRowDescriptor *)row
-{
-    UITableViewCell<XLFormDescriptorCell> * nextCell = (UITableViewCell<XLFormDescriptorCell> *)[row cellForFormController:self];
-    BOOL canBecomeFirstResponder = [nextCell respondsToSelector:@selector(formDescriptorCellBecomeFirstResponder)];
-    return canBecomeFirstResponder;
-}
 
 @end

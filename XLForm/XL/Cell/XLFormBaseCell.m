@@ -90,4 +90,9 @@
     return [super inputAccessoryView];
 }
 
+-(BOOL)formDescriptorCellCanBecomeFirstResponder
+{
+    return NO;
+}
+
 @end

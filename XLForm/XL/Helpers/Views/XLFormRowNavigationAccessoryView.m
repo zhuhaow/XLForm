@@ -27,7 +27,6 @@
 
 
 @interface XLFormRowNavigationAccessoryView ()
-@property (nonatomic, strong) UIToolbar *toolBar;
 
 @property (nonatomic, strong) UIBarButtonItem *fixedSpace;
 @property (nonatomic, strong) UIBarButtonItem *flexibleSpace;
