@@ -1,5 +1,5 @@
 //
-//  XLFormDescriptorCell.h
+//  XLFormRowNavigationAccessoryView.h
 //  XLForm ( https://github.com/xmartlabs/XLForm )
 //
 //  Copyright (c) 2014 Xmartlabs ( http://xmartlabs.com )
@@ -25,25 +25,11 @@
 
 #import <UIKit/UIKit.h>
 
+@interface XLFormRowNavigationAccessoryView : UIView
 
-@class XLFormRowDescriptor;
-@class XLFormViewController;
-
-@protocol XLFormDescriptorCell <NSObject>
-
-@required
-
-@property (nonatomic, weak) XLFormRowDescriptor * rowDescriptor;
--(void)configure;
--(void)update;
-
-@optional
-
-+(CGFloat)formDescriptorCellHeightForRowDescriptor:(XLFormRowDescriptor *)rowDescriptor;
--(BOOL)formDescriptorCellCanBecomeFirstResponder;
--(BOOL)formDescriptorCellBecomeFirstResponder;
--(void)formDescriptorCellDidSelectedWithFormController:(XLFormViewController *)controller;
--(NSString *)formDescriptorHttpParameterName;
-
+@property (nonatomic) UIToolbar *toolBar;
+@property (nonatomic) UIBarButtonItem *previousButton;
+@property (nonatomic) UIBarButtonItem *nextButton;
+@property (nonatomic) UIBarButtonItem *doneButton;
 
 @end
